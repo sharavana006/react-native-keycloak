@@ -153,9 +153,10 @@ export class Login {
     }
 
     getLoginURL() {
-      const { redirectUri, clientId, kcIdpHint,options } = this.conf;
+      const { redirectUri, clientId, kcIdpHint,params } = this.conf;
       const responseType = 'code';
       const state = uuidv4();
+	  
       const scope = 'openid';
       const url = `${this.getRealmURL()}/protocol/openid-connect/auth?${querystring.stringify({
         scope,
@@ -163,13 +164,12 @@ export class Login {
         redirect_uri: redirectUri,
         client_id: clientId,
         response_type: responseType,
-        options:options,
-        state,
-      })}`;
-
+        state
+      })}${params}`;
+		
       return {
         url,
-        state,
+        state
       };
     }
 
