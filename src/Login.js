@@ -28,7 +28,21 @@ export class Login {
     getTokens() {
       return this.tokenStorage.loadTokens();
     }
-
+	startRegistrationProcess(conf){
+		
+      this.setConf(conf);
+      return new Promise(((resolve, reject) => {
+        const { url, state } = this.getRegisterURL();
+        this.state = {
+          ...this.state,
+          resolve,
+          reject,
+          state,
+        };
+        Linking.openURL(url);
+      }));
+		
+	}
     startLoginProcess(conf) {
       this.setConf(conf);
       return new Promise(((resolve, reject) => {
@@ -173,6 +187,27 @@ export class Login {
       };
     }
 
+	 getRegisterURL() {
+      const { redirectUri, clientId, kcIdpHint,params } = this.conf;
+      const responseType = 'code';
+      const state = uuidv4();
+	  
+      const scope = 'openid';
+      const url = `${this.getRealmURL()}/protocol/openid-connect/registrations?${querystring.stringify({
+        scope,
+        kc_idp_hint: kcIdpHint,
+        redirect_uri: redirectUri,
+        client_id: clientId,
+        response_type: responseType,
+        state
+      })}${params}`;
+		console.log(url);
+      return {
+        url,
+        state
+      };
+    }
+	
     setTokenStorage(tokenStorage) {
       this.tokenStorage = tokenStorage;
     }
